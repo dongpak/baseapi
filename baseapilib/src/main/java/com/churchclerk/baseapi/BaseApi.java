@@ -42,21 +42,21 @@ public abstract class BaseApi<R extends BaseModel> {
 	@Value("${jwt.secret}")
 	private String	secret;
 
-	//@PathParam("id")
+	@PathParam("id")
 	protected String id;
 
-	//@DefaultValue("0")
-	//@QueryParam("page")
+	@DefaultValue("0")
+	@QueryParam("page")
 	protected int page = 0;
 
-	//@DefaultValue("20")
-	//@QueryParam("size")
+	@DefaultValue("20")
+	@QueryParam("size")
 	protected int size = 20;
 
-	//@QueryParam("active")
+	@QueryParam("active")
 	protected Boolean active;
 
-	//@QueryParam("sortBy")
+	@QueryParam("sortBy")
 	protected String sortBy;
 
 	protected SecurityToken	authToken			= null;
