@@ -32,7 +32,7 @@ public class DemoApi extends BaseApi<Demo> {
      */
     public DemoApi() {
         super(logger, Demo.class);
-        setReadRoles(Role.ADMIN, Role.CLERK, Role.OFFICIAL, Role.MEMBER, Role.NONMEMbER);
+        setReadRoles(Role.ADMIN, Role.CLERK, Role.OFFICIAL, Role.MEMBER, Role.NONMEMBER);
         setUpdateRoles(Role.ADMIN);
         setDeleteRoles(Role.ADMIN);
     }
