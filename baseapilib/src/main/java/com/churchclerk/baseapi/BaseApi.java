@@ -31,7 +31,7 @@ import java.util.List;
 public abstract class BaseApi<R extends BaseModel> {
 
 	public enum Role {
-		SUPER, ADMIN, CLERK, OFFICIAL, MEMBER, NONMEMbER
+		SUPER, ADMIN, CLERK, OFFICIAL, MEMBER, NONMEMBER
 	}
 
 	private Logger logger;
