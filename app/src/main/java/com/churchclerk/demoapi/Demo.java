@@ -3,7 +3,7 @@
  */
 package com.churchclerk.demoapi;
 
-import com.churchclerk.basemodel.BaseModel;
+import com.churchclerk.baseapi.model.BaseModel;
 
 import java.util.Objects;
 

@@ -1,7 +1,7 @@
 /*
  *
  */
-package com.churchclerk.basemodel;
+package com.churchclerk.baseapi.model;
 
 import java.util.Date;
 import java.util.Objects;

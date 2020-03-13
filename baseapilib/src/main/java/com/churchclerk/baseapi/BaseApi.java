@@ -3,7 +3,7 @@
  */
 package com.churchclerk.baseapi;
 
-import com.churchclerk.basemodel.BaseModel;
+import com.churchclerk.baseapi.model.BaseModel;
 import com.churchclerk.securityapi.SecurityApi;
 import com.churchclerk.securityapi.SecurityToken;
 import org.slf4j.Logger;
