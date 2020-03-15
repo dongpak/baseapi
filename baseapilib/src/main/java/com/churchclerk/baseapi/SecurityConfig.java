@@ -33,7 +33,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         }
         else {
             http.csrf().disable()
-                    .authorizeRequests().antMatchers("/api/test/test").permitAll()
+                    .authorizeRequests().antMatchers("/api/auth/jwt").permitAll()
                     .anyRequest().authenticated().and()
                     .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).and()
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
