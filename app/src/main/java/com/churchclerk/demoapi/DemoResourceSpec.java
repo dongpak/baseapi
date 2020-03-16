@@ -27,6 +27,7 @@ public class DemoResourceSpec implements Specification<DemoEntity> {
 
         addPredicate(criteriaBuilder, root, "id", criteria.getId(), predicates);
         addPredicate(criteriaBuilder, root, "active", criteria.isActive(), predicates);
+        addPredicate(criteriaBuilder, root, "testData", criteria.getTestData(), predicates);
 
         if (predicates.isEmpty()) {
             return null;

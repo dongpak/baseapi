@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 import java.util.Date;
 import java.util.UUID;
 
@@ -26,6 +27,9 @@ import java.util.UUID;
 public class DemoApi extends BaseApi<Demo> {
 
     private static Logger logger = LoggerFactory.getLogger(DemoApi.class);
+
+    @QueryParam("testData")
+    private String testDataLike;
 
 
     @Autowired
@@ -56,6 +60,7 @@ public class DemoApi extends BaseApi<Demo> {
 
         addBaseCriteria(criteria);
 
+        criteria.setTestData(testDataLike);
         if (readAllowed("testmember") == false) {
             criteria.setId(UUID.randomUUID().toString());
         }
@@ -96,7 +101,8 @@ public class DemoApi extends BaseApi<Demo> {
         resource.setCreatedDate(new Date());
         resource.setUpdatedBy(apiCaller.getUserid());
         resource.setUpdatedDate(new Date());
-        return resource;
+
+        return service.createResource(resource);
     }
 
     @Override

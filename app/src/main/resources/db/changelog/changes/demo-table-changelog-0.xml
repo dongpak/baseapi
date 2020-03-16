@@ -16,7 +16,7 @@
             <column name="active" type="boolean" defaultValueBoolean="true"/>
 
             <column name="testdata" type="varchar(128)">
-                <constraints primaryKey="true"/>
+                <constraints nullable="false" unique="true"/>
             </column>
 
             <column name="created_date" type="timestamp">
@@ -36,7 +36,7 @@
             </column>
 		</createTable>
 		<rollback>
-			<dropTable tableName="user"/>
+			<dropTable tableName="demo"/>
 		</rollback>
 	</changeSet>
 

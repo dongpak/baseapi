@@ -55,7 +55,7 @@ public class DemoApiTest {
 	private String			testId;
 	private Demo			testResource;
 	private DemoEntity 		testEntity;
-	protected Principal		testPrincipal;
+	private Principal		testPrincipal;
 
 	@BeforeEach
 	public void setupMock() {

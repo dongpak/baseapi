@@ -6,6 +6,8 @@ import com.churchclerk.baseapi.model.ApiCaller;
 import com.churchclerk.securityapi.SecurityApi;
 import com.churchclerk.securityapi.SecurityToken;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
@@ -14,9 +16,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 
 import java.net.Inet4Address;
+import java.util.Iterator;
 
 /**
  *
@@ -25,26 +29,26 @@ import java.net.Inet4Address;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class DemoApiApplicationTest {
 
-	private static final String 	TOKEN_PREFIX 	= "Bearer ";
-	private static final String 	HEADER_AUTH 	= "Authorization";
+	private static final String TOKEN_PREFIX = "Bearer ";
+	private static final String HEADER_AUTH = "Authorization";
 
 
 	@LocalServerPort
-	private int 		port;
+	private int port;
 
 	@Value("${jwt.secret}")
-	private String		testSecret;
+	private String testSecret;
 
 	@Autowired
-	private DemoApi 	api;
+	private DemoApi api;
 
 	@Autowired
-	private TestRestTemplate	restTemplate;
+	private TestRestTemplate restTemplate;
 
-	private SecurityToken		testToken;
+	private SecurityToken testToken;
 
-	private HttpHeaders 		testHeaders;
-	private Demo				testResource;
+	private HttpHeaders testHeaders;
+	private Demo testResource;
 
 
 	@BeforeEach
@@ -56,10 +60,9 @@ public class DemoApiApplicationTest {
 			}
 
 			testHeaders = new HttpHeaders();
-			testHeaders.add(HEADER_AUTH, TOKEN_PREFIX+testToken.getJwt());
+			testHeaders.add(HEADER_AUTH, TOKEN_PREFIX + testToken.getJwt());
 			testHeaders.add("Content-Type", "application/json");
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new RuntimeException("Error creating security token", e);
 		}
 	}
@@ -93,7 +96,7 @@ public class DemoApiApplicationTest {
 	}
 
 	private String createUrl(String id) {
-		StringBuffer	buffer = new StringBuffer("http://localhost:");
+		StringBuffer buffer = new StringBuffer("http://localhost:");
 
 		buffer.append(port);
 		buffer.append("/api/demo");
@@ -107,8 +110,8 @@ public class DemoApiApplicationTest {
 
 	private JsonObject getResourcesAndCheck(String url, long count) {
 
-		HttpEntity<String>		entity 		= new HttpEntity<String>(testHeaders);
-		ResponseEntity<String>	response	= restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+		HttpEntity<String> entity = new HttpEntity<String>(testHeaders);
+		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
 
 		Assertions.assertThat(response).isNotNull();
 		Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -138,19 +141,18 @@ public class DemoApiApplicationTest {
 	}
 
 	/**
-	 *
 	 * @param expected
 	 * @return posted resource
 	 */
 	private Demo createResourceAndCheck(Demo expected) {
 
-		HttpEntity<Demo>		entity 		= new HttpEntity<Demo>(expected, testHeaders);
-		ResponseEntity<Demo>	response	= restTemplate.exchange(createUrl(), HttpMethod.POST, entity, Demo.class);
+		HttpEntity<Demo> entity = new HttpEntity<Demo>(expected, testHeaders);
+		ResponseEntity<Demo> response = restTemplate.exchange(createUrl(), HttpMethod.POST, entity, Demo.class);
 
 		Assertions.assertThat(response).isNotNull();
 		Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-		Demo	actual = response.getBody();
+		Demo actual = response.getBody();
 
 		Assertions.assertThat(actual).isNotNull();
 
@@ -176,171 +178,143 @@ public class DemoApiApplicationTest {
 		ResponseEntity<Demo>	response	= restTemplate.exchange(createUrl(expected.getId()), HttpMethod.GET, entity, Demo.class);
 
 		Assertions.assertThat(response).isNotNull();
-//		Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-//
-//		Demo	actual = response.getBody();
-//
-//		Assertions.assertThat(actual).isNotNull();
-//		Assertions.assertThat(actual).isEqualTo(expected);
+		Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+		Demo	actual = response.getBody();
+
+		Assertions.assertThat(actual).isNotNull();
+		Assertions.assertThat(actual).isEqualTo(expected);
 	}
 
-//	@Test
-//	@Order(4)
-//	public void testUpdateResource() throws Exception {
-//
-//		User	testdata 	= createUser(1002);
-//		User	expected	= createResourceAndCheck(testdata);
-//
-//		expected.setActive(false);
-//		expected.setToken(null);
-//
-//		HttpEntity<User>		entity 		= new HttpEntity<User>(expected, testHeaders);
-//		ResponseEntity<User>	response	= restTemplate.exchange(createUrl(expected.getName()), HttpMethod.PUT, entity, User.class);
-//
-//		Assertions.assertThat(response).isNotNull();
-//		Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-//
-//		User	actual = response.getBody();
-//
-//		Assertions.assertThat(actual).isNotNull();
-//		Assertions.assertThat(actual.getUpdatedDate()).isAfterOrEqualTo(expected.getUpdatedDate());
-//
-//		expected.setToken(actual.getToken());
-//		expected.setUpdatedDate(actual.getUpdatedDate());
-//		Assertions.assertThat(actual).isEqualTo(expected);
-//	}
-//
-//	@Test
-//	@Order(5)
-//	public void testDeleteResource() throws Exception {
-//
-//		User	testdata 	= createUser(1003);
-//		User	expected	= createResourceAndCheck(testdata);
-//
-//		// delete
-//		HttpEntity<User>		entity 		= new HttpEntity<User>(testHeaders);
-//		ResponseEntity<User>	response	= restTemplate.exchange(createUrl(expected.getName()), HttpMethod.DELETE, entity, User.class);
-//
-//		Assertions.assertThat(response).isNotNull();
-//		Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-//
-//		// try getting the deleted resource
-//		HttpEntity<User>		entity2 	= new HttpEntity<User>(testHeaders);
-//		ResponseEntity<User>	response2	= restTemplate.exchange(createUrl(expected.getName()), HttpMethod.DELETE, entity2, User.class);
-//
-//		Assertions.assertThat(response2).isNotNull();
-//		Assertions.assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-//	}
-//
-//	@Test
-//	@Order(6)
-//	public void testGetResourcesPagination() throws Exception {
-//
-//		createResourceAndCheck(createUser(1004));
-//		createResourceAndCheck(createUser(1005));
-//
-//		getResourcesAndCheck(createPaginationUrl(0, 1), 1L);
-//		getResourcesAndCheck(createPaginationUrl(0, 2), 2L);
-//		getResourcesAndCheck(createPaginationUrl(1, 1), 1L);
-//		getResourcesAndCheck(createPaginationUrl(9, 5), 0L);
-//	}
-//
-//	private String createPaginationUrl(int page, int size) {
-//		StringBuffer buffer = new StringBuffer(createUrl());
-//
-//		buffer.append("?page=").append(page);
-//		buffer.append("&size=").append(size);
-//
-//		return buffer.toString();
-//	}
-//
-//	@Test
-//	@Order(7)
-//	public void testGetResourcesFilter() throws Exception {
-//
-//		createResourceAndCheck(createUser(1006));
-//		createResourceAndCheck(createUser(1007));
-//
-//		getResourcesAndCheck(createFilterUrl("name", "%1006"), 1L);
-//	}
-//
-//	private String createFilterUrl(String field, String value) {
-//		StringBuffer buffer = new StringBuffer(createUrl());
-//
-//		buffer.append("?");
-//		buffer.append(field);
-//		buffer.append("=");
-//		buffer.append(value);
-//
-//		return buffer.toString();
-//	}
-//
-//	@Test
-//	@Order(8)
-//	public void testGetResourcesSort() throws Exception {
-//
-//		createResourceAndCheck(createUser(1008));
-//		createResourceAndCheck(createUser(1009));
-//
-//		getResourcesAndCheck(createSortUrl("name"), 9L, Sort.Direction.ASC);
-//		getResourcesAndCheck(createSortUrl("-name"), 9L, Sort.Direction.DESC);
-//	}
-//
-//	private String createSortUrl(String keys) {
-//		StringBuffer buffer = new StringBuffer(createUrl());
-//
-//		buffer.append("?sortBy=");
-//		buffer.append(keys);
-//
-//		return buffer.toString();
-//	}
-//
-//	private void getResourcesAndCheck(String url, long count, final Sort.Direction dir) {
-//		JsonObject 	page 		= getResourcesAndCheck(url, count);
-//		JsonArray	content		= page.getAsJsonArray("content");
-//		String 		previous 	= null;
-//
-//		Iterator<JsonElement> iter = content.iterator();
-//
-//		while (iter.hasNext()) {
-//			String name = iter.next().getAsJsonObject().get("name").getAsString();
-//
-//			if (previous != null) {
-//				if (dir.equals(Sort.Direction.ASC)) {
-//					Assertions.assertThat(name).isGreaterThanOrEqualTo(previous);
-//				}
-//				else {
-//					Assertions.assertThat(name).isLessThanOrEqualTo(previous);
-//				}
-//			}
-//			previous = name;
-//		}
-//	}
-//
-//	@Test
-//	@Order(9)
-//	public void testAuthResource() throws Exception {
-//
-//		createResourceAndCheck(createUser(1009));
-//
-//		User					resource	= createUser(1009);
-//		HttpEntity<User>		entity 		= new HttpEntity<User>(resource, testHeaders);
-//		ResponseEntity<String>	response	= restTemplate.exchange(createAuthJwtUrl(), HttpMethod.POST, entity, String.class);
-//
-//		Assertions.assertThat(response).isNotNull();
-//		Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-//
-//		String	actual = response.getBody();
-//
-//		Assertions.assertThat(actual).isNotNull();
-//	}
-//
-//	private String createAuthJwtUrl() {
-//		StringBuffer	buffer = new StringBuffer("http://localhost:");
-//
-//		buffer.append(port);
-//		buffer.append("/api/auth/jwt");
-//
-//		return buffer.toString();
-//	}
+	@Test
+	@Order(4)
+	public void testUpdateResource() throws Exception {
+
+		Demo	testdata 	= createResource(1002);
+		Demo	expected	= createResourceAndCheck(testdata);
+
+		expected.setActive(false);
+
+		HttpEntity<Demo>		entity 		= new HttpEntity<Demo>(expected, testHeaders);
+		ResponseEntity<Demo>	response	= restTemplate.exchange(createUrl(expected.getId()), HttpMethod.PUT, entity, Demo.class);
+
+		Assertions.assertThat(response).isNotNull();
+		Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+		Demo	actual = response.getBody();
+
+		Assertions.assertThat(actual).isNotNull();
+		Assertions.assertThat(actual.getUpdatedDate()).isAfterOrEqualTo(expected.getUpdatedDate());
+
+		expected.setUpdatedDate(actual.getUpdatedDate());
+		Assertions.assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
+	@Order(5)
+	public void testDeleteResource() throws Exception {
+
+		Demo	testdata 	= createResource(1003);
+		Demo	expected	= createResourceAndCheck(testdata);
+
+		// delete
+		HttpEntity<Demo>		entity 		= new HttpEntity<Demo>(testHeaders);
+		ResponseEntity<Demo>	response	= restTemplate.exchange(createUrl(expected.getId()), HttpMethod.DELETE, entity, Demo.class);
+
+		Assertions.assertThat(response).isNotNull();
+		Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+		// try getting the deleted resource
+		HttpEntity<Demo>		entity2 	= new HttpEntity<Demo>(testHeaders);
+		ResponseEntity<Demo>	response2	= restTemplate.exchange(createUrl(expected.getId()), HttpMethod.DELETE, entity2, Demo.class);
+
+		Assertions.assertThat(response2).isNotNull();
+		Assertions.assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
+
+	@Test
+	@Order(6)
+	public void testGetResourcesPagination() throws Exception {
+
+		createResourceAndCheck(createResource(1004));
+		createResourceAndCheck(createResource(1005));
+
+		getResourcesAndCheck(createPaginationUrl(0, 1), 1L);
+		getResourcesAndCheck(createPaginationUrl(0, 2), 2L);
+		getResourcesAndCheck(createPaginationUrl(1, 1), 1L);
+		getResourcesAndCheck(createPaginationUrl(9, 5), 0L);
+	}
+
+	private String createPaginationUrl(int page, int size) {
+		StringBuffer buffer = new StringBuffer(createUrl());
+
+		buffer.append("?page=").append(page);
+		buffer.append("&size=").append(size);
+
+		return buffer.toString();
+	}
+
+	@Test
+	@Order(7)
+	public void testGetResourcesFilter() throws Exception {
+
+		createResourceAndCheck(createResource(1006));
+		createResourceAndCheck(createResource(1007));
+
+		getResourcesAndCheck(createFilterUrl("testData", "%1006"), 1L);
+	}
+
+	private String createFilterUrl(String field, String value) {
+		StringBuffer buffer = new StringBuffer(createUrl());
+
+		buffer.append("?");
+		buffer.append(field);
+		buffer.append("=");
+		buffer.append(value);
+
+		return buffer.toString();
+	}
+
+	@Test
+	@Order(8)
+	public void testGetResourcesSort() throws Exception {
+
+		createResourceAndCheck(createResource(1008));
+		createResourceAndCheck(createResource(1009));
+
+		getResourcesAndCheck(createSortUrl("testData"), 8L, Sort.Direction.ASC);
+		getResourcesAndCheck(createSortUrl("-testData"), 8L, Sort.Direction.DESC);
+	}
+
+	private String createSortUrl(String keys) {
+		StringBuffer buffer = new StringBuffer(createUrl());
+
+		buffer.append("?sortBy=");
+		buffer.append(keys);
+
+		return buffer.toString();
+	}
+
+	private void getResourcesAndCheck(String url, long count, final Sort.Direction dir) {
+		JsonObject 	page 		= getResourcesAndCheck(url, count);
+		JsonArray 	content		= page.getAsJsonArray("content");
+		String 		previous 	= null;
+
+		Iterator<JsonElement> iter = content.iterator();
+
+		while (iter.hasNext()) {
+			String testData = iter.next().getAsJsonObject().get("testData").getAsString();
+
+			if (previous != null) {
+				if (dir.equals(Sort.Direction.ASC)) {
+					Assertions.assertThat(testData).isGreaterThanOrEqualTo(previous);
+				}
+				else {
+					Assertions.assertThat(testData).isLessThanOrEqualTo(previous);
+				}
+			}
+			previous = testData;
+		}
+	}
+
 }

@@ -50,6 +50,10 @@ public class DemoService {
 	public Demo getResource(String id) {
 
 		Optional<DemoEntity> entity = storage.findById(id);
+		if (entity.isPresent() == false) {
+			return null;
+		}
+
 		return entity.get();
 	}
 

@@ -165,5 +165,8 @@ public class ApiCaller {
         return operationAllowed(id, deleteRoles);
     }
 
-
+    @Override
+    public String toString() {
+        return userid;
+    }
 }
