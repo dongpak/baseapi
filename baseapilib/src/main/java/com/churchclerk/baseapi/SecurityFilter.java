@@ -49,12 +49,12 @@ public class SecurityFilter extends OncePerRequestFilter {
             token.setJwt(auth.substring(7));
             token.setSecret(secret);
 
-            if (SecurityApi.process(token) == true
-            &&  token.expired() == false) {
+            if (SecurityApi.process(token) == true) {
                 SecurityContextHolder.getContext().setAuthentication(
                         createAuthenticationToken(
                                 createUserDetails(token),
-                                new WebAuthenticationDetailsSource().buildDetails(request)
+                                new WebAuthenticationDetailsSource().buildDetails(request),
+                                token
                         )
                 );
             }
@@ -69,14 +69,14 @@ public class SecurityFilter extends OncePerRequestFilter {
     }
 
     private UserDetails createUserDetails(SecurityToken token) {
-        return User.withUsername(token.getId()).password("test").roles("super").build();
+        return User.withUsername(token.getId()).password(token.getLocation()).roles(token.getRoles().split(",")).build();
     }
 
-    private UsernamePasswordAuthenticationToken createAuthenticationToken(UserDetails ud, Object details) {
+    private UsernamePasswordAuthenticationToken createAuthenticationToken(UserDetails ud, Object details, SecurityToken st) {
         GrantedAuthority    ga;
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                            ud, null, ud.getAuthorities()
+                            ud, st, ud.getAuthorities()
         );
 
         token.setDetails(details);

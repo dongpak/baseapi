@@ -3,8 +3,8 @@
  */
 package com.churchclerk.baseapi;
 
+import com.churchclerk.baseapi.model.ApiCaller;
 import com.churchclerk.baseapi.model.BaseModel;
-import com.churchclerk.securityapi.SecurityApi;
 import com.churchclerk.securityapi.SecurityToken;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
@@ -19,6 +20,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,10 +31,6 @@ import java.util.List;
  *
  */
 public abstract class BaseApi<R extends BaseModel> {
-
-	public enum Role {
-		SUPER, ADMIN, CLERK, OFFICIAL, MEMBER, NONMEMBER
-	}
 
 	private Logger logger;
 
@@ -59,14 +57,12 @@ public abstract class BaseApi<R extends BaseModel> {
 	@QueryParam("sortBy")
 	protected String sortBy;
 
-	protected SecurityToken	authToken			= null;
-	protected String		requesterId			= null;
-	protected String		requesterChurchId	= null;
+	protected ApiCaller	apiCaller	= null;
 
-	private Role[]		readRoles			= new Role[0];
-	private Role[]		createRoles			= new Role[0];
-	private Role[]		updateRoles			= new Role[0];
-	private Role[]		deleteRoles			= new Role[0];
+	private ApiCaller.Role[]	readRoles		= new ApiCaller.Role[0];
+	private ApiCaller.Role[]	createRoles		= new ApiCaller.Role[0];
+	private ApiCaller.Role[]	updateRoles		= new ApiCaller.Role[0];
+	private ApiCaller.Role[]	deleteRoles		= new ApiCaller.Role[0];
 
 	private Class<R>	resourceClass		= null;
 
@@ -84,7 +80,7 @@ public abstract class BaseApi<R extends BaseModel> {
 	 *
 	 * @param roles
 	 */
-	protected void setReadRoles(Role... roles) {
+	protected void setReadRoles(ApiCaller.Role... roles) {
 		this.readRoles = roles;
 	}
 
@@ -92,7 +88,7 @@ public abstract class BaseApi<R extends BaseModel> {
 	 *
 	 * @param roles
 	 */
-	protected void setCreateRoles(Role... roles) {
+	protected void setCreateRoles(ApiCaller.Role... roles) {
 		this.createRoles = roles;
 	}
 
@@ -100,7 +96,7 @@ public abstract class BaseApi<R extends BaseModel> {
 	 *
 	 * @param roles
 	 */
-	protected void setUpdateRoles(Role... roles) {
+	protected void setUpdateRoles(ApiCaller.Role... roles) {
 		this.updateRoles = roles;
 	}
 
@@ -108,7 +104,7 @@ public abstract class BaseApi<R extends BaseModel> {
 	 *
 	 * @param roles
 	 */
-	protected void setDeleteRoles(Role... roles) {
+	protected void setDeleteRoles(ApiCaller.Role... roles) {
 		this.deleteRoles = roles;
 	}
 
@@ -120,7 +116,7 @@ public abstract class BaseApi<R extends BaseModel> {
 	@Produces({MediaType.APPLICATION_JSON})
 	public Response getResources() {
 		try {
-			verifyToken();
+			parseApiCallerInfo();
 			Pageable pageable = PageRequest.of(page, size, createSort());
 
 			return Response.ok(doGet(pageable)).build();
@@ -159,18 +155,6 @@ public abstract class BaseApi<R extends BaseModel> {
 
 	/**
 	 *
-	 * @return
-	 */
-	protected void addBaseCriteria(R criteria) {
-
-		criteria.setActive(true);
-		if (active != null) {
-			criteria.setActive(active.booleanValue());
-		}
-	}
-
-	/**
-	 *
 	 * @param pageable
 	 * @return
 	 */
@@ -182,13 +166,26 @@ public abstract class BaseApi<R extends BaseModel> {
 	 *
 	 * @return
 	 */
+	protected void addBaseCriteria(R criteria) {
+
+		criteria.setActive(true);
+		if (active != null) {
+			criteria.setActive(active.booleanValue());
+		}
+	}
+
+
+	/**
+	 *
+	 * @return
+	 */
 	@GET
 	@Path("{id}")
 	@Produces({MediaType.APPLICATION_JSON})
 	public Response getResource() {
 		try {
-			verifyToken();
-			return Response.ok(doGet(id)).build();
+			parseApiCallerInfo();
+			return Response.ok(doGet()).build();
 		}
 		catch (Throwable t) {
 			return generateErrorResponse(t);
@@ -197,10 +194,9 @@ public abstract class BaseApi<R extends BaseModel> {
 
 	/**
 	 *
-	 * @param id
 	 * @return
 	 */
-	protected R doGet(String id) {
+	protected R doGet() {
 		return null;
 	}
 
@@ -215,7 +211,7 @@ public abstract class BaseApi<R extends BaseModel> {
 	public Response createResource(R resource) {
 
 		try {
-			verifyToken();
+			parseApiCallerInfo();
 			return Response.ok(doCreate(resource)).build();
 		}
 		catch (Throwable t) {
@@ -243,7 +239,7 @@ public abstract class BaseApi<R extends BaseModel> {
 	@Produces({MediaType.APPLICATION_JSON})
 	public Response updateResource(R resource) {
 		try {
-			verifyToken();
+			parseApiCallerInfo();
 			return Response.ok(
 					doUpdate(resource)
 			).build();
@@ -272,8 +268,8 @@ public abstract class BaseApi<R extends BaseModel> {
 	public Response deleteResource() {
 
 		try {
-			verifyToken();
-			return Response.ok(doDelete(id)).build();
+			parseApiCallerInfo();
+			return Response.ok(doDelete()).build();
 		}
 		catch (Throwable t) {
 			return generateErrorResponse(t);
@@ -282,10 +278,9 @@ public abstract class BaseApi<R extends BaseModel> {
 
 	/**
 	 *
-	 * @param id
 	 * @return
 	 */
-	protected R doDelete(String id) {
+	protected R doDelete() {
 		return null;
 	}
 
@@ -294,38 +289,22 @@ public abstract class BaseApi<R extends BaseModel> {
 	 * @return
 	 * @throws Exception
 	 */
-	public SecurityToken verifyToken() throws Exception {
+	public void parseApiCallerInfo() throws Exception {
+		SecurityToken	token = getSecurityToken();
 
-		SecurityToken	token	= new SecurityToken();
-		String 			auth 	= httpRequest.getHeader("Authorization");
+		if (token.getLocation().equals(getRemoteAddr()) == false) {
+			logger.info("Invalid location: " + getRemoteAddr());
 
-		if (auth == null) {
-			logger.info("Authorization header required");
-			throw new NotAuthorizedException("Authorization reuired");
+			throw new ForbiddenException("Invalid location");
 		}
 
-		token.setSecret(secret);
-		token.setJwt(auth.substring(7));
+		apiCaller = new ApiCaller(token.getId(), token.getRoles());
+	}
 
-		if (SecurityApi.process(token) == true) {
-			if (token.expired()) {
-				logger.info("Token expired");
-				throw new NotAuthorizedException("Token expired");
-			}
+	private SecurityToken getSecurityToken() {
+		Principal principal = httpRequest.getUserPrincipal();
 
-			if (token.getLocation().equals(getRemoteAddr()) == false) {
-				logger.info("Invalid location: " + getRemoteAddr());
-
-				throw new NotAuthorizedException("Invalid location");
-			}
-
-			authToken 	= token;
-
-			parseRequesterId();
-			return token;
-		}
-
-		throw new NotAuthorizedException("Bad token");
+		return (SecurityToken) ((UsernamePasswordAuthenticationToken) principal).getCredentials();
 	}
 
 	/**
@@ -342,22 +321,12 @@ public abstract class BaseApi<R extends BaseModel> {
 		return httpRequest.getRemoteAddr();
 	}
 
-	private void parseRequesterId() {
-		String[]	items = authToken.getId().split("\\|");
-
-		requesterId			= items[0];
-
-		if (items.length > 1) {
-			requesterChurchId = items[1];
-		}
-	}
-
 	/**
 	 *
 	 * @return
 	 */
 	protected boolean hasSuperRole() {
-		return authToken.getRoles().contains(Role.SUPER.name());
+		return apiCaller.hasSuperRole();
 	}
 
 	/**
@@ -365,7 +334,7 @@ public abstract class BaseApi<R extends BaseModel> {
 	 * @return
 	 */
 	protected boolean hasAdminRole() {
-		return authToken.getRoles().contains(Role.ADMIN.name());
+		return apiCaller.hasAdminRole();
 	}
 
     /**
@@ -373,7 +342,7 @@ public abstract class BaseApi<R extends BaseModel> {
 	 * @return
 	 */
 	protected boolean hasClerkRole() {
-		return authToken.getRoles().contains(Role.CLERK.name());
+		return apiCaller.hasClerkRole();
 	}
 
 	/**
@@ -381,7 +350,7 @@ public abstract class BaseApi<R extends BaseModel> {
 	 * @return
 	 */
 	protected boolean hasOfficialRole() {
-		return authToken.getRoles().contains(Role.CLERK.name()) || authToken.getRoles().contains(Role.OFFICIAL.name());
+		return apiCaller.hasOfficialRole();
 	}
 
     /**
@@ -389,64 +358,43 @@ public abstract class BaseApi<R extends BaseModel> {
 	 * @return
 	 */
 	protected boolean hasMemberRole() {
-		return authToken.getRoles().contains(Role.MEMBER.name());
+		return apiCaller.hasMemberRole();
 	}
 
 	/**
 	 *
-	 * @param churchId
+	 * @param id
 	 * @return
 	 */
-	private boolean operationAllowed(String churchId, Role[] roles) {
-		if (hasSuperRole()) {
-			return true;
-		}
-
-		if ((requesterChurchId != null) && (requesterChurchId.equals(churchId))) {
-			for (Role role : roles) {
-				if (authToken.getRoles().contains(role.name())) {
-					return true;
-				}
-			}
-		}
-
-		return false;
+	protected boolean readAllowed(String id) {
+		return apiCaller.readAllowed(id, readRoles);
 	}
 
 	/**
 	 *
-	 * @param churchId
+	 * @param id
 	 * @return
 	 */
-	protected boolean readAllowed(String churchId) {
-		return operationAllowed(churchId, readRoles);
+	protected boolean createAllowed(String id) {
+		return apiCaller.createAllowed(id, createRoles);
 	}
 
 	/**
 	 *
-	 * @param churchId
+	 * @param id
 	 * @return
 	 */
-	protected boolean createAllowed(String churchId) {
-		return operationAllowed(churchId, createRoles);
+	protected boolean updateAllowed(String id) {
+		return apiCaller.updateAllowed(id, updateRoles);
 	}
 
 	/**
 	 *
-	 * @param churchId
+	 * @param id
 	 * @return
 	 */
-	protected boolean updateAllowed(String churchId) {
-		return operationAllowed(churchId, updateRoles);
-	}
-
-	/**
-	 *
-	 * @param churchId
-	 * @return
-	 */
-	protected boolean deleteAllowed(String churchId) {
-		return operationAllowed(churchId, deleteRoles);
+	protected boolean deleteAllowed(String id) {
+		return apiCaller.deleteAllowed(id, deleteRoles);
 	}
 
 

@@ -4,6 +4,7 @@ package com.churchclerk.demoapi;
 
 
 import com.churchclerk.baseapi.BaseApi;
+import com.churchclerk.baseapi.model.ApiCaller;
 import com.churchclerk.securityapi.SecurityApi;
 import com.churchclerk.securityapi.SecurityToken;
 import org.assertj.core.api.Assertions;
@@ -15,11 +16,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
+import java.security.Principal;
 import java.util.Date;
 import java.util.UUID;
 
@@ -52,6 +55,7 @@ public class DemoApiTest {
 	private String			testId;
 	private Demo			testResource;
 	private DemoEntity 		testEntity;
+	protected Principal		testPrincipal;
 
 	@BeforeEach
 	public void setupMock() {
@@ -61,20 +65,26 @@ public class DemoApiTest {
 
 		testDate		= new Date();
 		testId			= UUID.randomUUID().toString();
-		testResource	= createUser(testId);
+		testResource	= createResource(testId);
 		testEntity		= new DemoEntity();
 
 		if (createToken(testId, LOCAL_ADDRESS) == false) {
 			throw new RuntimeException("Error creating security token");
 		};
 
+		testPrincipal   = new UsernamePasswordAuthenticationToken(null, testToken, null);
+
 		ReflectionTestUtils.setField(testObject, "secret", testSecret);
+
+		Mockito.when(testHttpRequest.getHeader(HEADER_AUTHORIZATION)).thenReturn(TOKEN_PREFIX+testToken.getJwt());
+		Mockito.when(testHttpRequest.getRemoteAddr()).thenReturn(LOCAL_ADDRESS);
+		Mockito.when(testHttpRequest.getUserPrincipal()).thenReturn(testPrincipal);
 	}
 
-	private Demo createUser(String name) {
+	private Demo createResource(String name) {
 		Demo	resource = new Demo();
 
-		resource.setId(UUID.randomUUID().toString());
+		resource.setId(testId);
 		resource.setTestData(resource.getId());
 		resource.setActive(true);
 		return resource;
@@ -84,7 +94,7 @@ public class DemoApiTest {
 		testToken = new SecurityToken();
 
 		testToken.setId(id + "|");
-		testToken.setRoles(BaseApi.Role.SUPER.name());
+		testToken.setRoles(ApiCaller.Role.SUPER.name());
 		testToken.setLocation(location);
 		testToken.setSecret(testSecret);
 
@@ -101,8 +111,6 @@ public class DemoApiTest {
 	public void testGetResources() throws Exception {
 		ReflectionTestUtils.setField(testObject, "sortBy", "street");
 
-		Mockito.when(testHttpRequest.getHeader(HEADER_AUTHORIZATION)).thenReturn(TOKEN_PREFIX+testToken.getJwt());
-		Mockito.when(testHttpRequest.getRemoteAddr()).thenReturn(LOCAL_ADDRESS);
 		Mockito.when(testService.getResources(null, null)).thenReturn(null);
 
 		Response response = testObject.getResources();
@@ -116,8 +124,6 @@ public class DemoApiTest {
 
 		ReflectionTestUtils.setField(testObject, "id", testId);
 
-		Mockito.when(testHttpRequest.getHeader(HEADER_AUTHORIZATION)).thenReturn(TOKEN_PREFIX+testToken.getJwt());
-		Mockito.when(testHttpRequest.getRemoteAddr()).thenReturn(LOCAL_ADDRESS);
 		Mockito.when(testService.getResource(testId)).thenReturn(null);
 
 		Response response = testObject.getResource();
@@ -127,8 +133,8 @@ public class DemoApiTest {
 
 	@Test
 	public void testCreateResource() throws Exception {
-		Mockito.when(testHttpRequest.getHeader(HEADER_AUTHORIZATION)).thenReturn(TOKEN_PREFIX+testToken.getJwt());
-		Mockito.when(testHttpRequest.getRemoteAddr()).thenReturn(LOCAL_ADDRESS);
+
+		testResource.setId(null);
 		Mockito.when(testService.createResource(testResource)).thenReturn(testResource);
 
 		Response response = testObject.createResource(testResource);
@@ -153,8 +159,6 @@ public class DemoApiTest {
 
 		ReflectionTestUtils.setField(testObject, "id", testId);
 
-		Mockito.when(testHttpRequest.getHeader(HEADER_AUTHORIZATION)).thenReturn(TOKEN_PREFIX+testToken.getJwt());
-		Mockito.when(testHttpRequest.getRemoteAddr()).thenReturn(LOCAL_ADDRESS);
 		Mockito.when(testService.getResource(testId)).thenReturn(testResource);
 		Mockito.when(testService.updateResource(testResource)).thenReturn(testResource);
 
@@ -175,8 +179,6 @@ public class DemoApiTest {
 	public void testUpdateResourceNotExist() throws Exception {
 		ReflectionTestUtils.setField(testObject, "id", testId);
 
-		Mockito.when(testHttpRequest.getHeader(HEADER_AUTHORIZATION)).thenReturn(TOKEN_PREFIX+testToken.getJwt());
-		Mockito.when(testHttpRequest.getRemoteAddr()).thenReturn(LOCAL_ADDRESS);
 		Mockito.when(testService.updateResource(testResource)).thenReturn(null);
 
 		Response response = testObject.updateResource(testResource);
@@ -188,8 +190,6 @@ public class DemoApiTest {
 	public void testDeleteResource() throws Exception {
 		ReflectionTestUtils.setField(testObject, "id", testId);
 
-		Mockito.when(testHttpRequest.getHeader(HEADER_AUTHORIZATION)).thenReturn(TOKEN_PREFIX+testToken.getJwt());
-		Mockito.when(testHttpRequest.getRemoteAddr()).thenReturn(LOCAL_ADDRESS);
 		Mockito.when(testService.deleteResource(testId)).thenReturn(testResource);
 
 		Response response = testObject.deleteResource();

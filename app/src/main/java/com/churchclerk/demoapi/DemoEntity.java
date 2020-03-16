@@ -16,7 +16,7 @@ import java.util.Date;
  *
  */
 @Entity
-@Table(name="test")
+@Table(name="demo")
 public class DemoEntity extends Demo {
 
 	@Column(name="active")
@@ -32,7 +32,7 @@ public class DemoEntity extends Demo {
 		return super.getId();
 	}
 
-	@Column(name="data")
+	@Column(name="testdata")
 	@Override
 	public String getTestData() {
 		return super.getTestData();
