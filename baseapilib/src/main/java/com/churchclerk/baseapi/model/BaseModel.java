@@ -5,6 +5,7 @@ package com.churchclerk.baseapi.model;
 
 import java.util.Date;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  *
@@ -101,21 +102,23 @@ public abstract class BaseModel {
      * @param source
      */
     public void copyNonNulls(BaseModel source) {
-       if (source.getId() != null) {
-           setId(source.getId());
-       }
-       setActive(source.isActive());
-       if (source.getCreatedDate() != null) {
-           setCreatedDate(source.getCreatedDate());
-       }
-       if (source.getCreatedBy() != null) {
-           setCreatedBy(source.getCreatedBy());
-       }
-       if (source.getUpdatedDate() != null) {
-           setUpdatedDate(source.getUpdatedDate());
-       }
-       if (source.getUpdatedBy() != null) {
-           setUpdatedBy(source.getUpdatedBy());
-       }
+        copy(source.getId(), this::setId);
+        setActive(source.isActive());
+        copy(source.getCreatedDate(), this::setCreatedDate);
+        copy(source.getCreatedBy(), this::setCreatedBy);
+        copy(source.getUpdatedDate(), this::setUpdatedDate);
+        copy(source.getUpdatedBy(), this::setUpdatedBy);
+    }
+
+    /**
+     *
+     * @param value
+     * @param consumer
+     * @param <T>
+     */
+    protected static <T> void copy(T value, Consumer<T> consumer) {
+        if (value != null) {
+            consumer.accept(value);
+        }
     }
 }

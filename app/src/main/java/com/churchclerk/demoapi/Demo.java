@@ -50,8 +50,6 @@ public class Demo extends BaseModel {
      */
     public void copyNonNulls(Demo source) {
         super.copyNonNulls(source);
-        if (source.getTestData() != null) {
-            setTestData(source.getTestData());
-        }
+        copy(source.getTestData(), this::setTestData);
     }
 }

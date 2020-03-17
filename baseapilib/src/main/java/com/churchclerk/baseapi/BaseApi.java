@@ -23,6 +23,7 @@ import javax.ws.rs.core.Response.Status;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 
 /**
@@ -367,8 +368,19 @@ public abstract class BaseApi<R extends BaseModel> {
 	 * @return
 	 */
 	protected boolean readAllowed(String id) {
-		return apiCaller.readAllowed(id, readRoles);
+		return apiCaller.readAllowed(id, readRoles, null);
 	}
+
+	/**
+	 *
+	 * @param id
+	 * @param nullAllowed
+	 * @return
+	 */
+	protected boolean readAllowed(String id, BooleanSupplier nullAllowed) {
+		return apiCaller.readAllowed(id, readRoles, nullAllowed);
+	}
+
 
 	/**
 	 *
@@ -376,7 +388,17 @@ public abstract class BaseApi<R extends BaseModel> {
 	 * @return
 	 */
 	protected boolean createAllowed(String id) {
-		return apiCaller.createAllowed(id, createRoles);
+		return apiCaller.createAllowed(id, createRoles, null);
+	}
+
+	/**
+	 *
+	 * @param id
+	 * @param nullAllowed
+	 * @return
+	 */
+	protected boolean createAllowed(String id, BooleanSupplier nullAllowed) {
+		return apiCaller.createAllowed(id, createRoles, nullAllowed);
 	}
 
 	/**
@@ -385,7 +407,17 @@ public abstract class BaseApi<R extends BaseModel> {
 	 * @return
 	 */
 	protected boolean updateAllowed(String id) {
-		return apiCaller.updateAllowed(id, updateRoles);
+		return apiCaller.updateAllowed(id, updateRoles, null);
+	}
+
+	/**
+	 *
+	 * @param id
+	 * @param nullAllowed
+	 * @return
+	 */
+	protected boolean updateAllowed(String id, BooleanSupplier nullAllowed) {
+		return apiCaller.updateAllowed(id, updateRoles, nullAllowed);
 	}
 
 	/**
@@ -394,9 +426,18 @@ public abstract class BaseApi<R extends BaseModel> {
 	 * @return
 	 */
 	protected boolean deleteAllowed(String id) {
-		return apiCaller.deleteAllowed(id, deleteRoles);
+		return apiCaller.deleteAllowed(id, deleteRoles, null);
 	}
 
+	/**
+	 *
+	 * @param id
+	 * @param nullAllowed
+	 * @return
+	 */
+	protected boolean deleteAllowed(String id, BooleanSupplier nullAllowed) {
+		return apiCaller.deleteAllowed(id, deleteRoles, nullAllowed);
+	}
 
 	/**
 	 * 

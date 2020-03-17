@@ -5,6 +5,7 @@ package com.churchclerk.baseapi.model;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 
 /**
  *
@@ -111,7 +112,7 @@ public class ApiCaller {
      * @param roles
      * @return
      */
-    private boolean operationAllowed(String id, Role[] roles) {
+    private boolean operationAllowed(String id, Role[] roles, BooleanSupplier nullAllowed) {
         if (hasSuperRole()) {
             return true;
         }
@@ -119,14 +120,18 @@ public class ApiCaller {
         for (Role role : roles) {
             if (this.roles.contains(role)) {
                 if (id == null) {
-                    return true;
+                    if (nullAllowed == null) {
+                        return false;       // operation not allowed by default
+                    }
+
+                    return nullAllowed.getAsBoolean();  // operation allowed based on this Lambda expression
                 }
 
-                return memberOf.contains(id);
+                return memberOf.contains(id);   // operation allowed if id is memberOf
             }
         }
 
-        return false;
+        return false;   // operation not allowed
     }
 
     /**
@@ -134,8 +139,8 @@ public class ApiCaller {
      * @param id
      * @return
      */
-    public boolean readAllowed(String id, Role[] readRoles) {
-        return operationAllowed(id, readRoles);
+    public boolean readAllowed(String id, Role[] readRoles, BooleanSupplier nullAllowed) {
+        return operationAllowed(id, readRoles, nullAllowed);
     }
 
     /**
@@ -143,8 +148,8 @@ public class ApiCaller {
      * @param id
      * @return
      */
-    public boolean createAllowed(String id, Role[] createRoles) {
-        return operationAllowed(id, createRoles);
+    public boolean createAllowed(String id, Role[] createRoles, BooleanSupplier nullAllowed) {
+        return operationAllowed(id, createRoles, nullAllowed);
     }
 
     /**
@@ -152,8 +157,8 @@ public class ApiCaller {
      * @param id
      * @return
      */
-    public boolean updateAllowed(String id, Role[] updateRoles) {
-        return operationAllowed(id, updateRoles);
+    public boolean updateAllowed(String id, Role[] updateRoles, BooleanSupplier nullAllowed) {
+        return operationAllowed(id, updateRoles, nullAllowed);
     }
 
     /**
@@ -161,8 +166,8 @@ public class ApiCaller {
      * @param id
      * @return
      */
-    public boolean deleteAllowed(String id, Role[] deleteRoles) {
-        return operationAllowed(id, deleteRoles);
+    public boolean deleteAllowed(String id, Role[] deleteRoles, BooleanSupplier nullAllowed) {
+        return operationAllowed(id, deleteRoles, nullAllowed);
     }
 
     @Override
@@ -170,3 +175,4 @@ public class ApiCaller {
         return userid;
     }
 }
+

@@ -82,7 +82,7 @@ public class DemoService {
 		if (optional.isPresent()) {
 			DemoEntity entity = optional.get();
 
-			entity.copy(resource);
+			entity.copyNonNulls(resource);
 			return storage.save(entity);
 		}
 
