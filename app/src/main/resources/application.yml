@@ -1,0 +1,24 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+#
+# DataSource settings: set here your own configurations for the database connection
+#
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    username: sa
+    password: sa
+
+#
+# JSON Web Token Key
+#
+jwt:
+  secret: test
+  debug: false
+  permitAll: false
+

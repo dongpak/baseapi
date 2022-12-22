@@ -1,0 +1,10 @@
+#server.contextPath=/applicationapi
+
+#
+# JSON Web Token Key
+#
+jwt:
+  secret: test
+  debug: false
+
+

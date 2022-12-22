@@ -5,8 +5,7 @@ package com.churchclerk.demoapi;
 
 import com.churchclerk.baseapi.BaseApi;
 import com.churchclerk.baseapi.model.ApiCaller;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,9 +23,8 @@ import java.util.UUID;
  */
 @Component
 @Path("/demo")
+@Slf4j
 public class DemoApi extends BaseApi<Demo> {
-
-    private static Logger logger = LoggerFactory.getLogger(DemoApi.class);
 
     @QueryParam("testData")
     private String testDataLike;
@@ -39,7 +37,7 @@ public class DemoApi extends BaseApi<Demo> {
      *
      */
     public DemoApi() {
-        super(logger, Demo.class);
+        super(Demo.class);
         setReadRoles(ApiCaller.Role.ADMIN, ApiCaller.Role.CLERK, ApiCaller.Role.OFFICIAL, ApiCaller.Role.MEMBER);
         setUpdateRoles(ApiCaller.Role.ADMIN);
         setDeleteRoles(ApiCaller.Role.ADMIN);
@@ -47,7 +45,6 @@ public class DemoApi extends BaseApi<Demo> {
 
     @Override
     protected Page<? extends Demo> doGet(Pageable pageable) {
-
         return service.getResources(pageable, createCriteria());
     }
 
@@ -56,7 +53,7 @@ public class DemoApi extends BaseApi<Demo> {
      * @return
      */
     protected Demo createCriteria() {
-        Demo criteria	= new Demo();
+        var criteria	= new Demo();
 
         addBaseCriteria(criteria);
 
@@ -79,7 +76,7 @@ public class DemoApi extends BaseApi<Demo> {
             throw new ForbiddenException();
         }
 
-        Demo resource = service.getResource(id.trim());
+        var resource = service.getResource(id.trim());
 
         return resource;
     }
@@ -97,10 +94,10 @@ public class DemoApi extends BaseApi<Demo> {
 
         resource.setId(UUID.randomUUID().toString());
 
-        resource.setCreatedBy(apiCaller.getUserid());
-        resource.setCreatedDate(new Date());
-        resource.setUpdatedBy(apiCaller.getUserid());
-        resource.setUpdatedDate(new Date());
+//        resource.setCreatedBy(apiCaller.getUserid());
+//        resource.setCreatedDate(new Date());
+//        resource.setUpdatedBy(apiCaller.getUserid());
+//        resource.setUpdatedDate(new Date());
 
         return service.createResource(resource);
     }

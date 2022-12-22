@@ -2,6 +2,8 @@
  */
 package com.churchclerk.baseapi.model;
 
+import lombok.Getter;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -10,6 +12,7 @@ import java.util.function.BooleanSupplier;
 /**
  *
  */
+@Getter
 public class ApiCaller {
 
     public enum Role {
@@ -54,9 +57,6 @@ public class ApiCaller {
         }
     }
 
-    public String getUserid() {
-        return userid;
-    }
 
     public Set<Role> getRoles() {
         return Collections.unmodifiableSet(roles);

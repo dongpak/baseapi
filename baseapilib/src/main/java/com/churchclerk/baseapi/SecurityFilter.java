@@ -5,8 +5,7 @@ package com.churchclerk.baseapi;
 
 import com.churchclerk.securityapi.SecurityApi;
 import com.churchclerk.securityapi.SecurityToken;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,9 +27,8 @@ import java.io.IOException;
  *
  */
 @Component
+@Slf4j
 public class SecurityFilter extends OncePerRequestFilter {
-
-    private static Logger logger = LoggerFactory.getLogger(SecurityFilter.class);
 
     @Value("${jwt.secret}")
     private String	secret;
@@ -40,11 +38,11 @@ public class SecurityFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
-        String auth = request.getHeader("Authorization");
+        var auth = request.getHeader("Authorization");
 
         if (auth != null && auth.startsWith("Bearer ")) {
 
-            SecurityToken token	= new SecurityToken();
+            var token	= new SecurityToken();
 
             token.setJwt(auth.substring(7));
             token.setSecret(secret);
@@ -59,23 +57,26 @@ public class SecurityFilter extends OncePerRequestFilter {
                 );
             }
             else {
-                logger.warn("JWT is expired or invalid!");
+                log.warn("JWT is expired or invalid!");
             }
         } else {
-            logger.warn("Authorization header missing or is not Bearer!");
+            log.warn("Authorization header missing or is not Bearer!");
         }
 
         chain.doFilter(request, response);
     }
 
     private UserDetails createUserDetails(SecurityToken token) {
-        return User.withUsername(token.getId()).password(token.getLocation()).roles(token.getRoles().split(",")).build();
+        return User.withUsername(token.getId())
+                .password(token.getLocation())
+                .roles(token.getRoles().split(","))
+                .build();
     }
 
     private UsernamePasswordAuthenticationToken createAuthenticationToken(UserDetails ud, Object details, SecurityToken st) {
         GrantedAuthority    ga;
 
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+        var token = new UsernamePasswordAuthenticationToken(
                             ud, st, ud.getAuthorities()
         );
 

@@ -3,8 +3,7 @@
  */
 package com.churchclerk.demoapi;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -12,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.NotFoundException;
-import java.util.Optional;
 
 
 /**
@@ -21,9 +19,8 @@ import java.util.Optional;
  *
  */
 @Service
+@Slf4j
 public class DemoService {
-
-	private static Logger logger	= LoggerFactory.getLogger(DemoService.class);
 
 	@Autowired
 	private DemoStorage storage;
@@ -37,7 +34,7 @@ public class DemoService {
 	 */
 	public Page<? extends Demo> getResources(Pageable pageable, Demo criteria) {
 
-		Page<DemoEntity> page = storage.findAll(new DemoResourceSpec(criteria), pageable);
+		var page = storage.findAll(new DemoResourceSpec(criteria), pageable);
 
 		return page;
 	}
@@ -49,7 +46,7 @@ public class DemoService {
 	 */
 	public Demo getResource(String id) {
 
-		Optional<DemoEntity> entity = storage.findById(id);
+		var entity = storage.findById(id);
 		if (entity.isPresent() == false) {
 			return null;
 		}
@@ -63,7 +60,7 @@ public class DemoService {
 	 * @return
 	 */
 	public Demo createResource(Demo resource) {
-		DemoEntity entity = new DemoEntity();
+		var entity = new DemoEntity();
 
 		entity.copy(resource);
 
@@ -77,7 +74,7 @@ public class DemoService {
 	 * @return
 	 */
 	public Demo updateResource(Demo resource) {
-		Optional<DemoEntity> optional = storage.findById(resource.getId().toString());
+		var optional = storage.findById(resource.getId().toString());
 
 		if (optional.isPresent()) {
 			DemoEntity entity = optional.get();
@@ -96,7 +93,7 @@ public class DemoService {
 	 * @return
 	 */
 	public Demo deleteResource(String id) {
-		Optional<DemoEntity> optional = storage.findById(id);
+		var optional = storage.findById(id);
 
 		if (optional.isPresent() == false) {
 			throw new NotFoundException("No such resource with id: " + id);

@@ -30,7 +30,7 @@ import java.util.UUID;
  *
  */
 @SpringBootTest
-@TestPropertySource(locations="classpath:application-mock.properties")
+@TestPropertySource(locations="classpath:application-mock.yml")
 public class DemoApiTest {
 
 	private static final String HEADER_AUTHORIZATION	= "Authorization";

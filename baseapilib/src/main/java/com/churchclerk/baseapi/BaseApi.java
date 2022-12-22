@@ -6,7 +6,7 @@ package com.churchclerk.baseapi;
 import com.churchclerk.baseapi.model.ApiCaller;
 import com.churchclerk.baseapi.model.BaseModel;
 import com.churchclerk.securityapi.SecurityToken;
-import org.slf4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,9 +31,8 @@ import java.util.function.BooleanSupplier;
  * @author dongp
  *
  */
+@Slf4j
 public abstract class BaseApi<R extends BaseModel> {
-
-	private Logger logger;
 
 	@Context
 	protected HttpServletRequest httpRequest;
@@ -68,12 +67,9 @@ public abstract class BaseApi<R extends BaseModel> {
 	private Class<R>	resourceClass		= null;
 
 	/**
-	 * 
-	 * @param logger
+	 *
 	 */
-	public BaseApi(Logger logger, Class<R> resourceClass) {
-
-		this.logger 		= logger;
+	public BaseApi(Class<R> resourceClass) {
 		this.resourceClass	= resourceClass;
 	}
 
@@ -294,7 +290,7 @@ public abstract class BaseApi<R extends BaseModel> {
 		SecurityToken	token = getSecurityToken();
 
 		if (token.getLocation().equals(getRemoteAddr()) == false) {
-			logger.info("Invalid location: " + getRemoteAddr());
+			log.info("Invalid location: " + getRemoteAddr());
 
 			throw new ForbiddenException("Invalid location");
 		}
@@ -455,7 +451,7 @@ public abstract class BaseApi<R extends BaseModel> {
 		}
 		else {
 			r = Response.serverError().build();
-			logger.error("Generating " + r.getStatus() + " " + r.getStatusInfo().getReasonPhrase() + " for "+ t, t);
+			log.error("Generating " + r.getStatus() + " " + r.getStatusInfo().getReasonPhrase() + " for "+ t, t);
 		}
 
 		return r;

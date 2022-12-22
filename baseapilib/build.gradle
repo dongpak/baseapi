@@ -7,11 +7,13 @@ plugins {
 group 'com.churchclerk'
 version '1.0'
 
-sourceCompatibility = 1.8
+//sourceCompatibility = 1.11
+
+apply plugin: 'maven'
 
 repositories {
-    mavenCentral()
     mavenLocal()
+    mavenCentral()
 }
 
 bootJar {
@@ -30,10 +32,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
     implementation 'com.churchclerk:securityapi:1.1'
+    implementation 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
 
     runtimeOnly 'mysql:mysql-connector-java'
-    runtimeOnly 'org.liquibase:liquibase-core'
     runtimeOnly 'com.auth0:java-jwt:3.2.0'
+
+
 //    runtimeOnly 'org.springframework.boot:spring-boot-starter-actuator'
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
@@ -41,6 +46,8 @@ dependencies {
     }
     testImplementation('com.h2database:h2')
     testImplementation('com.google.code.gson:gson')
+    testImplementation('org.projectlombok:lombok:1.18.24')
+    testAnnotationProcessor('org.projectlombok:lombok:1.18.24')
 }
 
 test {

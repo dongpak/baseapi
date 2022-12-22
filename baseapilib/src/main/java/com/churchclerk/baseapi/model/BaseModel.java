@@ -3,86 +3,34 @@
  */
 package com.churchclerk.baseapi.model;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+
 import java.util.Date;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
  *
  */
+@Data
+@SuperBuilder
+@NoArgsConstructor
 public abstract class BaseModel {
     private String  id;
     private boolean active;
+    @CreatedDate
     private Date    createdDate;
+    @CreatedBy
     private String  createdBy;
+    @LastModifiedDate
     private Date    updatedDate;
+    @LastModifiedBy
     private String  updatedBy;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
-    public Date getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Date getUpdatedDate() {
-        return updatedDate;
-    }
-
-    public void setUpdatedDate(Date updatedDate) {
-        this.updatedDate = updatedDate;
-    }
-
-    public String getUpdatedBy() {
-        return updatedBy;
-    }
-
-    public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        BaseModel baseModel = (BaseModel) o;
-        return active == baseModel.active &&
-                Objects.equals(id, baseModel.id) &&
-                Objects.equals(createdDate, baseModel.createdDate) &&
-                Objects.equals(createdBy, baseModel.createdBy) &&
-                Objects.equals(updatedDate, baseModel.updatedDate) &&
-                Objects.equals(updatedBy, baseModel.updatedBy);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, active, createdDate, createdBy, updatedDate, updatedBy);
-    }
 
     /**
      *

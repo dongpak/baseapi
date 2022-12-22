@@ -4,11 +4,10 @@
 package com.churchclerk.demoapi;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 /**
  * 
@@ -18,8 +17,6 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan({"com.churchclerk"})
 @SpringBootApplication
 public class DemoApiApplication {
-
-	private static Logger logger = LoggerFactory.getLogger(DemoApiApplication.class);
 
 	/**
 	 *

@@ -4,36 +4,19 @@
 package com.churchclerk.demoapi;
 
 import com.churchclerk.baseapi.model.BaseModel;
-
-import java.util.Objects;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 /**
  *
  */
+@Data
+@SuperBuilder
+@NoArgsConstructor
 public class Demo extends BaseModel {
     private String testData;
 
-    public String getTestData() {
-        return testData;
-    }
-
-    public void setTestData(String testData) {
-        this.testData = testData;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Demo)) return false;
-        if (!super.equals(o)) return false;
-        Demo testModel = (Demo) o;
-        return Objects.equals(testData, testModel.testData);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), testData);
-    }
 
     /**
      *

@@ -1,5 +1,6 @@
 package com.churchclerk.demoapi;
 
+import lombok.AllArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -10,16 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@AllArgsConstructor
 public class DemoResourceSpec implements Specification<DemoEntity> {
 
     private Demo criteria = null;
-
-    /**
-     * @param criteria
-     */
-    public DemoResourceSpec(Demo criteria) {
-        this.criteria = criteria;
-    }
 
     @Override
     public Predicate toPredicate(Root<DemoEntity> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
