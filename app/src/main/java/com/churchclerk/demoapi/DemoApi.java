@@ -94,11 +94,6 @@ public class DemoApi extends BaseApi<Demo> {
 
         resource.setId(UUID.randomUUID().toString());
 
-//        resource.setCreatedBy(apiCaller.getUserid());
-//        resource.setCreatedDate(new Date());
-//        resource.setUpdatedBy(apiCaller.getUserid());
-//        resource.setUpdatedDate(new Date());
-
         return service.createResource(resource);
     }
 

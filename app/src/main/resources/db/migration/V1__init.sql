@@ -5,9 +5,9 @@ CREATE TABLE demo
      active     BOOLEAN DEFAULT TRUE,
      testdata   VARCHAR(128) NOT NULL,
      created_date   TIMESTAMP NOT NULL DEFAULT now(),
-     created_by     VARCHAR(64) NOT NULL,
+     created_by     VARCHAR(64) NOT NULL DEFAULT 'sys',
      updated_date   TIMESTAMP NOT NULL DEFAULT now(),
-     updated_by     VARCHAR(64) NOT NULL,
+     updated_by     VARCHAR(64) NOT NULL DEFAULT 'sys',
      PRIMARY KEY(id),
      UNIQUE(testdata)
 );

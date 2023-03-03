@@ -2,6 +2,7 @@
  */
 package com.churchclerk.demoapi;
 
+import com.churchclerk.baseapi.AuditorConfig;
 import com.churchclerk.baseapi.model.ApiCaller;
 import com.churchclerk.securityapi.SecurityApi;
 import com.churchclerk.securityapi.SecurityToken;
@@ -16,8 +17,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.http.*;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
 
 import java.net.Inet4Address;
 import java.util.Iterator;
@@ -25,8 +30,10 @@ import java.util.Iterator;
 /**
  *
  */
+@DirtiesContext
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestPropertySource(locations="classpath:application-mock.yml")
 public class DemoApiApplicationTest {
 
 	private static final String TOKEN_PREFIX = "Bearer ";

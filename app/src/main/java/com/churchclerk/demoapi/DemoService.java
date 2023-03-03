@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
 
 
@@ -59,6 +60,7 @@ public class DemoService {
 	 * @param resource
 	 * @return
 	 */
+	@Transactional
 	public Demo createResource(Demo resource) {
 		var entity = new DemoEntity();
 
