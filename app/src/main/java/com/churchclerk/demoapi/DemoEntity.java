@@ -5,10 +5,6 @@ package com.churchclerk.demoapi;
 
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -46,31 +42,27 @@ public class DemoEntity extends Demo {
 		return super.getTestData();
 	}
 
-//	@Column(name = "created_by")
-//	@CreatedBy
-//	@Override
-//	public String getCreatedBy() {
-//		return super.getCreatedBy();
-//	}
-//
-//	@Column(name = "created_date")
-//	@CreatedDate
-//	@Override
-//	public Date getCreatedDate() {
-//		return super.getCreatedDate();
-//	}
-//
-//	@Column(name = "updated_by")
-//	@LastModifiedBy
-//	@Override
-//	public String getUpdatedBy() {
-//		return super.getUpdatedBy();
-//	}
-//
-//	@Column(name = "updated_date")
-//	@LastModifiedDate
-//	@Override
-//	public Date getUpdatedDate() {
-//		return super.getUpdatedDate();
-//	}
+	@Column(name = "created_by")
+	@Override
+	public String getCreatedBy() {
+		return super.getCreatedBy();
+	}
+
+	@Column(name = "created_date")
+	@Override
+	public Date getCreatedDate() {
+		return super.getCreatedDate();
+	}
+
+	@Column(name = "updated_by")
+	@Override
+	public String getUpdatedBy() {
+		return super.getUpdatedBy();
+	}
+
+	@Column(name = "updated_date")
+	@Override
+	public Date getUpdatedDate() {
+		return super.getUpdatedDate();
+	}
 }
