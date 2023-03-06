@@ -1,15 +1,14 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '2.2.4.RELEASE'
-    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'maven-publish'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
 }
 
 group 'com.churchclerk'
 version '1.0'
 
 //sourceCompatibility = 1.11
-
-apply plugin: 'maven'
 
 repositories {
     mavenLocal()
@@ -31,12 +30,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
-    implementation 'com.churchclerk:securityapi:1.1'
-    implementation 'org.projectlombok:lombok:1.18.24'
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    implementation libs.securityapi
+    implementation 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 
     runtimeOnly 'mysql:mysql-connector-java'
-    runtimeOnly 'com.auth0:java-jwt:3.2.0'
+    runtimeOnly 'com.auth0:java-jwt'
 
 
 //    runtimeOnly 'org.springframework.boot:spring-boot-starter-actuator'
@@ -46,8 +45,8 @@ dependencies {
     }
     testImplementation('com.h2database:h2')
     testImplementation('com.google.code.gson:gson')
-    testImplementation('org.projectlombok:lombok:1.18.24')
-    testAnnotationProcessor('org.projectlombok:lombok:1.18.24')
+    testImplementation('org.projectlombok:lombok')
+    testAnnotationProcessor('org.projectlombok:lombok')
 }
 
 test {

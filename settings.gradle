@@ -1,4 +1,16 @@
+dependencyResolutionManagement {
+    pluginManagement {
+        versionCatalogs {
+            libs {
+                from(files("../libs.versions.toml"))
+            }
+        }
+    }
+}
+
 rootProject.name = 'baseapi'
 include 'app'
 include 'baseapilib'
+
+
 
