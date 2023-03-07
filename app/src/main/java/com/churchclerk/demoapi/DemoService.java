@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
+import java.util.UUID;
 
 
 /**
@@ -47,7 +48,7 @@ public class DemoService {
 	 */
 	public Demo getResource(String id) {
 
-		var entity = storage.findById(id);
+		var entity = storage.findById(UUID.fromString(id));
 		if (entity.isPresent() == false) {
 			return null;
 		}
@@ -76,7 +77,7 @@ public class DemoService {
 	 * @return
 	 */
 	public Demo updateResource(Demo resource) {
-		var optional = storage.findById(resource.getId().toString());
+		var optional = storage.findById(resource.getId());
 
 		if (optional.isPresent()) {
 			DemoEntity entity = optional.get();
@@ -95,13 +96,13 @@ public class DemoService {
 	 * @return
 	 */
 	public Demo deleteResource(String id) {
-		var optional = storage.findById(id);
+		var optional = storage.findById(UUID.fromString(id));
 
 		if (optional.isPresent() == false) {
 			throw new NotFoundException("No such resource with id: " + id);
 		}
 
-		storage.deleteById(id);
+		storage.deleteById(UUID.fromString(id));
 		return optional.get();
 	}
 

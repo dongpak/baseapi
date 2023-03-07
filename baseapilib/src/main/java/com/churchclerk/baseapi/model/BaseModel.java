@@ -12,6 +12,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.util.Date;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 /**
@@ -21,7 +22,7 @@ import java.util.function.Consumer;
 @SuperBuilder
 @NoArgsConstructor
 public abstract class BaseModel {
-    private String  id;
+    private UUID    id;
     private boolean active;
     @CreatedDate
     private Date    createdDate;

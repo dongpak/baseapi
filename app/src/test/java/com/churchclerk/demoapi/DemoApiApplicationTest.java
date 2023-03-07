@@ -182,7 +182,7 @@ public class DemoApiApplicationTest {
 		Demo	expected	= createResourceAndCheck(testdata);
 
 		HttpEntity<Demo>		entity 		= new HttpEntity<Demo>(testHeaders);
-		ResponseEntity<Demo>	response	= restTemplate.exchange(createUrl(expected.getId()), HttpMethod.GET, entity, Demo.class);
+		ResponseEntity<Demo>	response	= restTemplate.exchange(createUrl(expected.getId().toString()), HttpMethod.GET, entity, Demo.class);
 
 		Assertions.assertThat(response).isNotNull();
 		Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -203,7 +203,7 @@ public class DemoApiApplicationTest {
 		expected.setActive(false);
 
 		HttpEntity<Demo>		entity 		= new HttpEntity<Demo>(expected, testHeaders);
-		ResponseEntity<Demo>	response	= restTemplate.exchange(createUrl(expected.getId()), HttpMethod.PUT, entity, Demo.class);
+		ResponseEntity<Demo>	response	= restTemplate.exchange(createUrl(expected.getId().toString()), HttpMethod.PUT, entity, Demo.class);
 
 		Assertions.assertThat(response).isNotNull();
 		Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -226,14 +226,14 @@ public class DemoApiApplicationTest {
 
 		// delete
 		HttpEntity<Demo>		entity 		= new HttpEntity<Demo>(testHeaders);
-		ResponseEntity<Demo>	response	= restTemplate.exchange(createUrl(expected.getId()), HttpMethod.DELETE, entity, Demo.class);
+		ResponseEntity<Demo>	response	= restTemplate.exchange(createUrl(expected.getId().toString()), HttpMethod.DELETE, entity, Demo.class);
 
 		Assertions.assertThat(response).isNotNull();
 		Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
 		// try getting the deleted resource
 		HttpEntity<Demo>		entity2 	= new HttpEntity<Demo>(testHeaders);
-		ResponseEntity<Demo>	response2	= restTemplate.exchange(createUrl(expected.getId()), HttpMethod.DELETE, entity2, Demo.class);
+		ResponseEntity<Demo>	response2	= restTemplate.exchange(createUrl(expected.getId().toString()), HttpMethod.DELETE, entity2, Demo.class);
 
 		Assertions.assertThat(response2).isNotNull();
 		Assertions.assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);

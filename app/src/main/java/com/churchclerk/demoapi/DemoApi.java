@@ -59,7 +59,7 @@ public class DemoApi extends BaseApi<Demo> {
 
         criteria.setTestData(testDataLike);
         if (readAllowed("testmember") == false) {
-            criteria.setId(UUID.randomUUID().toString());
+            criteria.setId(UUID.randomUUID());
         }
 
         return criteria;
@@ -92,18 +92,18 @@ public class DemoApi extends BaseApi<Demo> {
             throw new ForbiddenException();
         }
 
-        resource.setId(UUID.randomUUID().toString());
+        resource.setId(UUID.randomUUID());
 
         return service.createResource(resource);
     }
 
     @Override
     protected Demo doUpdate(Demo resource) {
-        if ((id == null) || id.isEmpty() || resource.getId() == null || resource.getId().isEmpty()) {
+        if ((id == null) || id.isEmpty() || resource.getId() == null) {
             throw new BadRequestException("Resource id cannot be empty");
         }
 
-        if (resource.getId().equals(id) == false) {
+        if (resource.getId().toString().equals(id) == false) {
             throw new BadRequestException("Resource id does not match");
         }
 

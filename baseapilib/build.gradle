@@ -34,12 +34,6 @@ dependencies {
     implementation 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    runtimeOnly 'mysql:mysql-connector-java'
-    runtimeOnly 'com.auth0:java-jwt'
-
-
-//    runtimeOnly 'org.springframework.boot:spring-boot-starter-actuator'
-
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
